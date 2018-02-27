@@ -1,3 +1,4 @@
+var x {JOBS,K_mach_RESOURCES,TIME} binary;
 
 #---------- Objective function --------------------------
 minimize Finish_times_and_tardiness:
@@ -14,4 +15,4 @@ subject to constraint3 {k in K_mach_RESOURCES, u in TIME}:
         sum{j in JOBS, v in max(u-proc_time_disc+1,0)..u} x[j,k,v] <= 1;
 
 subject to constraint4 {u in 0..max(r_disc,a_disc)-1, j in JOBS, k in K_mach_RESOURCES}:
-        x[i,j,k]=0;
+        x[j,k,u]=0;
