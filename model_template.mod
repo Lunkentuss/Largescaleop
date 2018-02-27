@@ -5,6 +5,7 @@ set K_mach_RESOURCES; 				# The set of MT-cells
 #------------- Sets not used in our model ----------
 set I_OP; 							# The sets of operations (1..5)
 set K_RESOURCES; 					# The set of all machines
+set Q_PREC; 						# First member of the set Q 
 
 #------------- Param used in our model -------------
 param T_HORIZON integer > 0 ; 		# Max number of intervals
@@ -14,9 +15,6 @@ param M > 0; 						# Big number (Not an integer)
 
 set TIME = 0..T_HORIZON;
 set JOBS = 1..maxjobs;
-
-#------------ Sets not used in our model -----------
-set Q_PREC; 						# First member of the set Q 
 
 #------------- Param used in our model -------------
 
