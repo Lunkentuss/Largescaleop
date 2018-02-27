@@ -3,14 +3,20 @@
 # T_HORIZON := max number of time intervals
 # T_length_interval := 1
 # maxjobs := maximum number of jobs
-# M := Big number >= planning horizon
+# M := Big number >= planning horizon (Not an integer!)
 
 # d_disc := due dates for the jobs
 # proc_time_disc := processing time  (p_j in the MT-cell)
 # p_j_o_postmach_disc := processing time (p^pmtilde, processing time 2-5)
 # r_disc := release date for the machining problem
 
-# Not used parameters:
+# Not used parameters in our problem: ------------
+# set I_OP
+# K_RESOURCES
+# w (Transportation time between resources) 
+# Q_PREC
+# q_follow
+
 
 
 param ind integer >= 0;
