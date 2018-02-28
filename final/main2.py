@@ -16,4 +16,9 @@ maxjobs = getSingleParameter(ampl,'maxjobs')
 
 flexmat = flexdf2mat(flexdf,int(maxjobs),5)
 
-print(flexmat)
+#print(flexmat)
+
+a_disc_list = ampl.getParameter('a_disc').getValues().toList()
+
+l = [a_disc_list[k][1] for k in range(5)]
+print(l)
