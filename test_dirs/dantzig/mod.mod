@@ -23,7 +23,7 @@ param ind integer >= 0;
 
 param row1 {j in 1..max(ind+1-1,ind)};  # Test max function
 
-var x {j in 1..ind};
+var x {1..ind};
 
 maximize fun: sum {j in 1..ind} row1[j] * x[j];
 

@@ -1,5 +1,5 @@
 import sys
-sys.path.append("../utils/")
+sys.path.append("../../utils/")
 
 from amplpy import AMPL
 from getpara import * 

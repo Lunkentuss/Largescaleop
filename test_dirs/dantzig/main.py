@@ -9,8 +9,7 @@ ampl.setOption('solver','cplex')
 # Set starting values (from heuristic)
 ind = ampl.getParameter('ind')
 ind.setValues([1])
-ampl.getParameter('row1').setValues([1])
-
+ampl.getParameter('row1').setValues({1:1})
 
 # Numbers of iterations in dantzig
 for i in range(2,5+1):
