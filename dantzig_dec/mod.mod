@@ -52,20 +52,26 @@ param resource_weight {JOBS};
 # ======================================================
 
 
-# ================ Script params ======================= 
+# ================ Script parameters ===================
 param A{JOBS};
 param B{JOBS};
 
 # Column generation parameter:
 param L_len := 1;
+set L = 1..L_len;
 
 # Column generation parameter:
 # Summation of x_bar over time
-param x_bar_sum_u {1..L_len,JOBS,K_mach_RESOURCES};
+param x_bar_sum_u {L,JOBS,K_mach_RESOURCES};
 
 # Column generation parameter:
 # Summation of x_bar (A[j](u + p_j^pm) + B[j][u + p[j]j^pm - d[j]]_+)
-param x_bar_sum_u_star {1..L_len,JOBS,K_mach_RESOURCES};
+param x_bar_sum_u_star {L,JOBS,K_mach_RESOURCES};
+
+# This set will always be set to one specific machine
+# and is used in the column generation problem for 
+# machine k
+set mach_k within {K_mach_RESOURCES};
 
 # ================ Primal problem ====================== 
 var x {JOBS,K_mach_RESOURCES,TIME} binary;
@@ -100,7 +106,7 @@ maximize obj_LP_D_RMP:
 	sum{j in JOBS} pi[j] + sum{k in K_mach_RESOURCES} gamma[k];
 	
 #---------- Constraints --------------------------------
-subject to constraint_d1 {l in 1..L_len,k in K_mach_RESOURCES}:
+subject to constraint_d1 {l in L,k in K_mach_RESOURCES}:
 	(sum{j in JOBS}x_bar_sum_u[l,j,k] * pi[j]) + gamma[k]  <= sum{j in JOBS} x_bar_sum_u_star[l,j,k]; # Summation problem?
 		
 #---------- Problem ------------------------------------
