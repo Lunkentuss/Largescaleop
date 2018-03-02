@@ -31,3 +31,12 @@ def setSingleParameter(ampl,str,value):
 # object ampl
 def set2list(ampl,str):
 	return [x[0] for x in ampl.getSet(str).getValues().toList()]
+
+# Sets a parameter that is indexed by a single ordered set 
+def setParamOfSingleSet(ampl,set_name,param_name,values):
+        set_list = ampl.getSet(set_name).getValues().toList()
+        set_list = [x[0] for x in set_list]
+        param_dict = {set_list[i]:values[i] for i in range(len(set_list))}
+        df = DataFrame((set_name),(param_name))
+        df.setValues()
+        return
