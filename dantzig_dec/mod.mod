@@ -53,6 +53,7 @@ param resource_weight {JOBS};
 
 
 # ================ Script parameters ===================
+# ======================================================
 param A{JOBS};
 param B{JOBS};
 
@@ -74,6 +75,7 @@ param x_bar_sum_u_star {L,JOBS,K_mach_RESOURCES};
 set mach_k within {K_mach_RESOURCES};
 
 # ================ Primal problem ====================== 
+# ======================================================
 var x {JOBS,K_mach_RESOURCES,TIME} binary;
 
 #---------- Objective function -------------------------
@@ -98,6 +100,7 @@ problem primal: Finish_times_and_tardiness, x, constraint_p1,
 				constraint_p2, constraint_p3, constraint_p4;
 
 # ================ LP D-RMP  =========================== 
+# ======================================================
 var pi {JOBS};
 var gamma {K_mach_RESOURCES};
 
@@ -107,9 +110,27 @@ maximize obj_LP_D_RMP:
 	
 #---------- Constraints --------------------------------
 subject to constraint_d1 {l in L,k in K_mach_RESOURCES}:
-	(sum{j in JOBS}x_bar_sum_u[l,j,k] * pi[j]) + gamma[k]  <= sum{j in JOBS} x_bar_sum_u_star[l,j,k]; # Summation problem?
+	sum{j in JOBS}(x_bar_sum_u[l,j,k] * pi[j]) + gamma[k]  <= sum{j in JOBS} x_bar_sum_u_star[l,j,k]; # Summation problem?
 		
 #---------- Problem ------------------------------------
 problem lp_dual: obj_LP_D_RMP, pi, gamma, constraint_d1;
 
-# ================ *********  =========================== 
+# ======== The column generation sub-problem  ==========
+# ======================================================
+var x_sub {JOBS,K_mach_RESOURCES,TIME} binary;
+
+#---------- Objective function -------------------------
+minimize obj_sub: sum{k in mach_k}(sum{j in JOBS,u in TIME}(
+	(A[j]*(u+p_j_o_postmach_disc[j]) + B[j]*max(u+p_j_o_postmach_disc[j]-d_disc[j],0) - pi[j])*x_sub[j,k,u]) - gamma[k]); 
+
+#---------- Constraints --------------------------------
+subject to constraint_s1{j in JOBS, k in mach_k}:sum{u in TIME}(x_sub[j,k,u]) <= lambda_mach[j,k];
+
+subject to constraint_s2 {k in mach_k, u in TIME}:
+	sum{j in JOBS, v in max(u-proc_time_disc[j]+1,0)..u} x_sub[j,k,v] <= 1;
+
+subject to constraint_s3 {j in JOBS, k in mach_k, u in 0..max(r_disc[j],a_disc[k])}:
+        x_sub[j,k,u]=0;
+
+#---------- Problem ------------------------------------
+problem column_generation: obj_sub,x_sub,constraint_s1, constraint_s1, constraint_s3;

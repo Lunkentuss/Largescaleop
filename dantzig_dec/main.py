@@ -15,8 +15,9 @@ nbr_of_machines = len(mach_list)
 #print('Number of machines: ' + repr(nbr_of_machines))
 #print('Machines: ' + repr(mach_list))
 
-# Get the nbr of max jobs
+## Get the nbr of max jobs
 nbr_of_jobs = getSingleParameter(ampl,'maxjobs')
 nbr_of_jobs = int(nbr_of_jobs)
 #print('Number of jobs: ' + repr(nbr_of_jobs))
+
 
