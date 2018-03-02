@@ -84,7 +84,7 @@ minimize Finish_times_and_tardiness:
 
 #---------- Constraints --------------------------------
 subject to constraint_p1 {j in JOBS}:
-	sum{k in K_mach_RESOURCES, u in TIME} x[j,k,u] = 1;
+	sum{k in K_mach_RESOURCES, u in TIME} x[j,k,u] == 1;
 
 subject to constraint_p2 {j in JOBS, k in K_mach_RESOURCES}:
 	sum{u in TIME} x[j,k,u] <= lambda_mach[j,k];
@@ -130,7 +130,22 @@ subject to constraint_s2 {k in mach_k, u in TIME}:
 	sum{j in JOBS, v in max(u-proc_time_disc[j]+1,0)..u} x_sub[j,k,v] <= 1;
 
 subject to constraint_s3 {j in JOBS, k in mach_k, u in 0..max(r_disc[j],a_disc[k])}:
-        x_sub[j,k,u]=0;
+        x_sub[j,k,u] == 0;
 
 #---------- Problem ------------------------------------
-problem column_generation: obj_sub,x_sub,constraint_s1, constraint_s1, constraint_s3;
+problem column_generation: obj_sub, x_sub,constraint_s1, constraint_s1, constraint_s3;
+
+# ======================= RMP ==========================
+# ======================================================
+var tau{K_mach_RESOURCES,L} >= 0;
+
+#---------- Objective function -------------------------
+minimize obj_rmp: sum{l in L,k in K_mach_RESOURCES}(sum{j in JOBS}(x_bar_sum_u_star[l,j,k]) * tau[k,l]);
+
+#---------- Constraints --------------------------------
+subject to constraint_rmp1 {j in JOBS}: sum{k in K_mach_RESOURCES, l in L}(x_bar_sum_u[l,j,k] * tau[k,l]) == 1;
+
+subject to constraint_rmp2 {k in K_mach_RESOURCES}: sum{l in L}(tau[k,l]) == 1;
+
+#---------- Problem ------------------------------------
+problem rmp: obj_rmp, tau, constraint_rmp1, constraint_rmp2;

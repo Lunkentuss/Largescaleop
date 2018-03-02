@@ -21,3 +21,4 @@ nbr_of_jobs = int(nbr_of_jobs)
 #print('Number of jobs: ' + repr(nbr_of_jobs))
 
 
+# Set A and B
