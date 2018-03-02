@@ -20,5 +20,34 @@ nbr_of_jobs = getSingleParameter(ampl,'maxjobs')
 nbr_of_jobs = int(nbr_of_jobs)
 #print('Number of jobs: ' + repr(nbr_of_jobs))
 
+# Set A[j] and B[j]
 
-# Set A and B
+
+# Find feasible solution from heuristic and set x[1,k,j]
+# in ampl
+
+
+# Calculate RMP for the feasible solution(objective value)
+
+
+# Loop for column generation
+
+
+max_iterations = 1000;
+l = 2;
+while(1):
+	# Solve dual RMP
+
+	# Solve column generation problem and update x_bar
+
+	# Solve RMP (pessimistic bound)
+
+	# Optimistic bound??????
+
+	# Termination criteria == 1 (close enough criteria)
+	if(1 != 1 or l >= max_iterations): 
+		break;
+
+	l = l + 1;
+
+# Solve RMP with binary constraint
