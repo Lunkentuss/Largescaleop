@@ -46,7 +46,7 @@ def main():
 	ampl.eval('let {l in L_len..L_len, k in K_mach_RESOURCES}' +
 			  	'x_bar_sum_u_star[l,k]  := sum{u in TIME, j in JOBS}' + 
 				'((A[j]*(u+p_j_o_postmach_disc[j])+B[j]' + 
-				'*max(u+p_j_o_postmach_disc[j],0))*x_heur[j,k,u]);')
+				'*max(u+p_j_o_postmach_disc[j]-d_disc[j],0))*x_heur[j,k,u]);')
 
 	#print(ampl.getParameter('x_heur').getValues().toDict())
 
