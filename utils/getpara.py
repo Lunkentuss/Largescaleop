@@ -20,8 +20,11 @@ def flexdf2mat(df,nbr_of_jobs,nbr_of_machines):
 
 # Get a single valued parameter with name str from the 
 # object ampl
-def getSingleParameter(ampl,str):
-	return ampl.getParameter(str).getValues().toList()[0][0]
+def getSingleParameter(ampl,str,integer=True):
+	para = ampl.getParameter(str).getValues().toList()[0][0]
+	if(integer):
+		para = int(para)
+	return para
 
 # Sets a single valued parameter with name str in the
 # object ampl
