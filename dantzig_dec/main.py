@@ -21,10 +21,17 @@ nbr_of_jobs = int(nbr_of_jobs)
 #print('Number of jobs: ' + repr(nbr_of_jobs))
 
 # Set A[j] and B[j]
-
+A = [1 for x in range(nbr_of_jobs)]
+B = [1 for x in range(nbr_of_jobs)]
+setParamOfSingleSet(ampl,'JOBS','A',A)
+setParamOfSingleSet(ampl,'JOBS','B',B)
+#print("A-dict: " + str(ampl.getParameter('A').getValues().toDict()))
+#print("B-dict: " + str(ampl.getParameter('B').getValues().toDict()))
 
 # Find feasible solution from heuristic and set x[1,k,j]
 # in ampl
+ampl.eval('let L_len := 1;')
+#print('L_len := ' + str(getSingleParameter(ampl,'L_len')))
 
 
 # Calculate RMP for the feasible solution(objective value)
@@ -33,9 +40,12 @@ nbr_of_jobs = int(nbr_of_jobs)
 # Loop for column generation
 
 
-max_iterations = 1000;
+max_iterations = 10;
 l = 2;
 while(1):
+	# Debuggers:
+	#print('L_len := ' + str(getSingleParameter(ampl,'L_len')))
+
 	# Solve dual RMP
 
 	# Solve column generation problem and update x_bar
@@ -48,6 +58,8 @@ while(1):
 	if(1 != 1 or l >= max_iterations): 
 		break;
 
+	# Increase l
 	l = l + 1;
+	ampl.eval('let L_len := ' + repr(l) + ';')
 
 # Solve RMP with binary constraint

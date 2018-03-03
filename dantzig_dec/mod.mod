@@ -58,7 +58,7 @@ param A{JOBS};
 param B{JOBS};
 
 # Column generation parameter:
-param L_len := 1;
+param L_len integer;
 set L = 1..L_len;
 
 # Column generation parameter:
