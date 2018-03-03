@@ -57,6 +57,8 @@ param resource_weight {JOBS};
 param A{JOBS};
 param B{JOBS};
 
+param x_heur {JOBS,K_mach_RESOURCES,TIME};
+
 # Column generation parameter:
 param L_len integer;
 set L = 1..L_len;
@@ -67,7 +69,8 @@ param x_bar_sum_u {L,JOBS,K_mach_RESOURCES};
 
 # Column generation parameter:
 # Summation of x_bar (A[j](u + p_j^pm) + B[j][u + p[j]j^pm - d[j]]_+)
-param x_bar_sum_u_star {L,JOBS,K_mach_RESOURCES};
+# over TIME and JOBS
+param x_bar_sum_u_star {L,K_mach_RESOURCES};
 
 # This set will always be set to one specific machine
 # and is used in the column generation problem for 
@@ -110,7 +113,7 @@ maximize obj_LP_D_RMP:
 	
 #---------- Constraints --------------------------------
 subject to constraint_d1 {l in L,k in K_mach_RESOURCES}:
-	sum{j in JOBS}(x_bar_sum_u[l,j,k] * pi[j]) + gamma[k]  <= sum{j in JOBS} x_bar_sum_u_star[l,j,k]; # Summation problem?
+	sum{j in JOBS}(x_bar_sum_u[l,j,k] * pi[j]) + gamma[k]  <= x_bar_sum_u_star[l,k]; # Summation problem?
 		
 #---------- Problem ------------------------------------
 problem lp_dual: obj_LP_D_RMP, pi, gamma, constraint_d1;
@@ -140,7 +143,7 @@ problem column_generation: obj_sub, x_sub,constraint_s1, constraint_s1, constrai
 var tau{K_mach_RESOURCES,L} >= 0;
 
 #---------- Objective function -------------------------
-minimize obj_rmp: sum{l in L,k in K_mach_RESOURCES}(sum{j in JOBS}(x_bar_sum_u_star[l,j,k]) * tau[k,l]);
+minimize obj_rmp: sum{l in L,k in K_mach_RESOURCES}(x_bar_sum_u_star[l,k] * tau[k,l]);
 
 #---------- Constraints --------------------------------
 subject to constraint_rmp1 {j in JOBS}: sum{k in K_mach_RESOURCES, l in L}(x_bar_sum_u[l,j,k] * tau[k,l]) == 1;
