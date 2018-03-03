@@ -3,63 +3,71 @@ sys.path.append('../utils/')
 from amplpy import AMPL, DataFrame
 from getpara import *
 
-ampl = AMPL()
+def main():
 
-ampl.read('mod.mod')
-ampl.readData('dat.dat')
-ampl.setOption('solver','cplex')
+	ampl = AMPL()
 
-# Get nbr of machines and the set 
-mach_list = set2list(ampl,'K_mach_RESOURCES')
-nbr_of_machines = len(mach_list)
-#print('Number of machines: ' + repr(nbr_of_machines))
-#print('Machines: ' + repr(mach_list))
+	ampl.read('mod.mod')
+	ampl.readData('dat.dat')
+	ampl.setOption('solver','cplex')
 
-## Get the nbr of max jobs
-nbr_of_jobs = getSingleParameter(ampl,'maxjobs')
-nbr_of_jobs = int(nbr_of_jobs)
-#print('Number of jobs: ' + repr(nbr_of_jobs))
+	# Get nbr of machines and the set 
+	mach_list = set2list(ampl,'K_mach_RESOURCES')
+	nbr_of_machines = len(mach_list)
+	#print('Number of machines: ' + repr(nbr_of_machines))
+	#print('Machines: ' + repr(mach_list))
 
-# Set A[j] and B[j]
-A = [1 for x in range(nbr_of_jobs)]
-B = [1 for x in range(nbr_of_jobs)]
-setParamOfSingleSet(ampl,'JOBS','A',A)
-setParamOfSingleSet(ampl,'JOBS','B',B)
-#print("A-dict: " + str(ampl.getParameter('A').getValues().toDict()))
-#print("B-dict: " + str(ampl.getParameter('B').getValues().toDict()))
+	## Get the nbr of max jobs
+	nbr_of_jobs = getSingleParameter(ampl,'maxjobs')
+	nbr_of_jobs = int(nbr_of_jobs)
+	#print('Number of jobs: ' + repr(nbr_of_jobs))
 
-# Find feasible solution from heuristic and set x[1,k,j]
-# in ampl
-ampl.eval('let L_len := 1;')
-#print('L_len := ' + str(getSingleParameter(ampl,'L_len')))
+	# Set A[j] and B[j]
+	A = [1 for x in range(nbr_of_jobs)]
+	B = [1 for x in range(nbr_of_jobs)]
+	setParamOfSingleSet(ampl,'JOBS','A',A)
+	setParamOfSingleSet(ampl,'JOBS','B',B)
+	#print("A-dict: " + str(ampl.getParameter('A').getValues().toDict()))
+	#print("B-dict: " + str(ampl.getParameter('B').getValues().toDict()))
 
-
-# Calculate RMP for the feasible solution(objective value)
-
-
-# Loop for column generation
-
-
-max_iterations = 10;
-l = 2;
-while(1):
-	# Debuggers:
+	# Find feasible solution from heuristic and set x[1,k,j]
+	# in ampl
+	ampl.eval('let L_len := 1;')
 	#print('L_len := ' + str(getSingleParameter(ampl,'L_len')))
 
-	# Solve dual RMP
 
-	# Solve column generation problem and update x_bar
+	# Calculate RMP for the feasible solution(objective value)
 
-	# Solve RMP (pessimistic bound)
 
-	# Optimistic bound??????
+	# Loop for column generation
 
-	# Termination criteria == 1 (close enough criteria)
-	if(1 != 1 or l >= max_iterations): 
-		break;
 
-	# Increase l
-	l = l + 1;
-	ampl.eval('let L_len := ' + repr(l) + ';')
+	max_iterations = 10;
+	l = 2;
+	ampl.eval('let L_len := 2;')
+	while(1):
+		# Debuggers:
+		print('L_len := ' + str(getSingleParameter(ampl,'L_len')))
 
-# Solve RMP with binary constraint
+		# Solve dual RMP
+
+		# Solve column generation problem and update x_bar
+
+		# Solve RMP (pessimistic bound)
+
+		# Optimistic bound??????
+	
+		# Termination criteria == 1 (close enough criteria)
+		if(1 != 1 or l >= max_iterations): 
+			break;
+
+		# Increase l
+		l = l + 1;
+		ampl.eval('let L_len := ' + repr(l) + ';')
+
+	# Solve RMP with binary constraint
+
+
+
+if __name__ == '__main__':
+	main()
