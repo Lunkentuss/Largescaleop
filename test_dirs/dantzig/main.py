@@ -1,5 +1,10 @@
 from amplpy import AMPL
 
+import sys
+
+sys.path.append('../../utils/')
+from getpara import *
+
 ampl = AMPL()
 
 ampl.read('mod.mod')
@@ -35,3 +40,7 @@ for i in range(2,5+1):
 
 	solution = ampl.getVariable('x')
 	print("Solution: " + repr(solution.getValues().toDict()))
+
+row1_list = para2list(ampl,'row1')
+print('row1')
+print(row1_list)

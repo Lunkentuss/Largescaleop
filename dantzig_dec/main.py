@@ -40,14 +40,16 @@ def main():
 
 
 	# Loop for column generation
-
-
-	max_iterations = 10;
+	max_iterations = 2;
 	l = 2;
 	ampl.eval('let L_len := 2;')
 	while(1):
 		# Debuggers:
-		print('L_len := ' + str(getSingleParameter(ampl,'L_len')))
+		#print('L_len := ' + str(getSingleParameter(ampl,'L_len')))
+
+		# Termination criteria == 1 (close enough criteria)
+		if(1 != 1 or l >= max_iterations): 
+			break;
 
 		# Solve dual RMP
 
@@ -57,10 +59,6 @@ def main():
 
 		# Optimistic bound??????
 	
-		# Termination criteria == 1 (close enough criteria)
-		if(1 != 1 or l >= max_iterations): 
-			break;
-
 		# Increase l
 		l = l + 1;
 		ampl.eval('let L_len := ' + repr(l) + ';')

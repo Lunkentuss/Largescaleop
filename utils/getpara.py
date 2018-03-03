@@ -18,7 +18,6 @@ def flexdf2mat(df,nbr_of_jobs,nbr_of_machines):
 			ind = ind + 1
 	return mat
 
-
 # Get a single valued parameter with name str from the 
 # object ampl
 def getSingleParameter(ampl,str):
@@ -34,6 +33,17 @@ def setSingleParameter(ampl,str,value):
 # object ampl
 def set2list(ampl,str):
 	return [x[0] for x in ampl.getSet(str).getValues().toList()]
+
+# Get the list representing a given parameter that depends
+# only on a single valued index set
+def para2list(ampl,str,integer=True):
+	list_para = ampl.getParameter(str).getValues().toList()
+	if(integer):
+		list_para = [int(list_para[i][1]) for i in range(len(list_para))]
+	else:
+		list_para = [list_para[i][1] for i in range(len(list_para))]
+	return list_para
+	
 
 # Sets a parameter that is indexed by a single ordered set 
 def setParamOfSingleSet(ampl,set_name,param_name,values):
