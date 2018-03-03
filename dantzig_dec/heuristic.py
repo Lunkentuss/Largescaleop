@@ -2,49 +2,71 @@ import sys
 sys.path.append("../utils/")
 
 from amplpy import AMPL
-from typing import NewType
 from getpara import *
 
-def getDictHeuristic(ampl):
+def index_sorted(name_array,reverse=False):
+	""" Returns a list of indices which is ordered
+		by the values in the given name_array
+	"""
 
+	a = name_array.copy()
+	sorted_index_list = [0 for x in range(len(a))]
+
+	if(reverse):
+		f = max
+		maxmin = -sys.maxsize
+	else:
+		f = min
+		maxmin = sys.maxsize 
+
+	for i in range(len(a)):
+		ind_max = a.index(f(a))
+		sorted_index_list[i] = ind_max
+		a[ind_max] = maxmin
+
+	return sorted_index_list
+
+def getDictHeuristic(ampl):
 	# Initialization of parameters and variables
 	mach_list = set2list(ampl,'K_mach_RESOURCES')
 	nbr_of_machines = len(mach_list)
-	maxjobs = int(getSingleParameter(ampl,'maxjobs'))
+	maxjobs = getSingleParameter(ampl,'maxjobs')
 	lambda_mach = flexdf2mat(ampl.getParameter('lambda_mach').getValues(),maxjobs,nbr_of_machines)
-	a_disc_list = ampl.getParameter('a_disc').getValues().toList()
-	mach_avail_time = [int(a_disc_list[i][1]) for i in range(nbr_of_machines)]
-	proc_time_disc_list = ampl.getParameter('proc_time_disc').getValues().toList()
-	proc_time_disc = [int(proc_time_disc_list[i][1]) for i in range(maxjobs)]
-	T_HORIZON = int(getSingleParameter(ampl,'T_HORIZON'))
-	TIME = list(range(0,T_HORIZON+1))
-	#x = [[[0] * T_HORIZON for i in range(nbr_of_machines)] for j in range(maxjobs)]
-	x = {(x,y,z):0 for x in mach_list for y in JOBS_left for z in TIME}
+	a_disc_list = para2list(ampl,'a_disc')
+	r_disc_list = para2list(ampl,'r_disc')
+	proc_time_disc_list =  para2list(ampl,'proc_time_disc')
+	T_HORIZON = getSingleParameter(ampl,'T_HORIZON')
+	TIME = list(range(T_HORIZON+1))
 
-	JOBS_left = list(range(1,maxjobs+1)) # name jobs 1,...,maxjobs
-	# Heuristic
-	# Check if the job is ready and if the job can be done on the machine
+	mach_avail_time = a_disc_list
+	JOBS_left = list(range(maxjobs))
+	x = {(x+1,y,z):0 for x in JOBS_left for y in mach_list for z in TIME}
+
+	# Order after job time in descending order
+	#JOBS_left = index_sorted(proc_time_disc_list,reverse=True)
 	while (len(JOBS_left) > 0):
-		mach_avail_time_ord = [mach_avail_time.index(x) for x in sorted(mach_avail_time)]
-		for mach in mach_avail_time_ord:
+		#print(len(JOBS_left))
+		mach_avail_time_ind_ord = index_sorted(mach_avail_time)
+
+		break_loop = False
+		for mach in mach_avail_time_ind_ord:
 			for job in JOBS_left:
+				# Test if job is feasible in machine
+				if(r_disc_list[job] <= mach_avail_time[mach] and lambda_mach[job][mach] == 1):
+					#print(x[(job+1,mach_list[mach],mach_avail_time[mach])])
+					x[(job+1,mach_list[mach],mach_avail_time[mach])] = 1
+					#print(x[(job+1,mach_list[mach],mach_avail_time[mach])])
+					mach_avail_time[mach] += proc_time_disc_list[job] 
+					JOBS_left.pop(JOBS_left.index(job))
+
+					break_loop = True
 				
+				if(break_loop):
+					break
+			if(break_loop):
+				break
 
-
-
-    	lambda_machine = []
-    	for i in JOBS_left:
-        	lambda_machine.append(lambda_mach[i-1][machine]) # extract lambda values for chosen machine
-    
-    	job_ind = lambda_machine.index(max(lambda_machine))
-    	job = JOBS_left[job_ind] # find some job possible on chosen machine
-    
-        X[job-1][machine][mach_avail_time[machine]] = 1
-
-    	JOBS_left.pop(job_ind) # job performed -> remove from JOBS_left
-    
-    	mach_avail_time[machine] += proc_time_disc[job_ind] # update available time for machine
 	return x 
 
-# sorted(a,reverse=True)
-# sorted(a)
+#if __name__ == '__main__':
+#	print('OK')

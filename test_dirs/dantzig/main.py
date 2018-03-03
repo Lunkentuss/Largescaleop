@@ -44,3 +44,4 @@ for i in range(2,5+1):
 row1_list = para2list(ampl,'row1')
 print('row1')
 print(row1_list)
+print(getSingleParameter(ampl,'ind',integer=False))
