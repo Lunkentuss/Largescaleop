@@ -113,7 +113,7 @@ maximize obj_LP_D_RMP:
 	
 #---------- Constraints --------------------------------
 subject to constraint_d1 {l in L,k in K_mach_RESOURCES}:
-	sum{j in JOBS}(x_bar_sum_u[l,j,k] * pi[j]) + gamma[k]  <= x_bar_sum_u_star[l,k]; # Summation problem?
+	sum{j in JOBS}(x_bar_sum_u[l,j,k] * pi[j]) + gamma[k]  <= x_bar_sum_u_star[l,k]; # Summation problem goes where?
 		
 #---------- Problem ------------------------------------
 problem lp_dual: obj_LP_D_RMP, pi, gamma, constraint_d1;
@@ -152,3 +152,18 @@ subject to constraint_rmp2 {k in K_mach_RESOURCES}: sum{l in L}(tau[k,l]) == 1;
 
 #---------- Problem ------------------------------------
 problem rmp: obj_rmp, tau, constraint_rmp1, constraint_rmp2;
+
+# ======================= RMP-binary ===================
+# ======================================================
+var tau_bin{K_mach_RESOURCES,1..L_len-1} >= 0;
+
+#---------- Objective function -------------------------
+minimize obj_rmp_bin: sum{l in 1..L_len-1,k in K_mach_RESOURCES}(x_bar_sum_u_star[l,k] * tau[k,l]);
+
+#---------- Constraints --------------------------------
+subject to constraint_rmp1_bin {j in JOBS}: sum{k in K_mach_RESOURCES, l in 1..L_len-1}(x_bar_sum_u[l,j,k] * tau[k,l]) == 1;
+
+subject to constraint_rmp2_bin {k in K_mach_RESOURCES}: sum{l in 1..L_len-1}(tau[k,l]) == 1;
+
+#---------- Problem ------------------------------------
+problem rmp_bin: obj_rmp_bin, tau_bin, constraint_rmp1_bin, constraint_rmp2_bin;
