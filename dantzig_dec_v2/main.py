@@ -15,7 +15,7 @@ def main():
 	# Declare problems
 	ampl.eval('problem lp_dual1: obj_LP_D_RMP, pi, gamma, constraint_d1;')
 	ampl.eval('problem column_generation1: obj_sub, x_sub,constraint_s1,' +
-				'constraint_s1, constraint_s3;')
+				'constraint_s2, constraint_s3;')
 	ampl.eval('problem rmp1: obj_rmp, tau, constraint_rmp1, constraint_rmp2;')
 	ampl.eval('problem rmp1_bin: obj_rmp_bin, tau_bin, constraint_rmp1_bin, constraint_rmp2_bin;')
 
@@ -67,7 +67,7 @@ def main():
 
 
 	# Loop for column generation
-	max_iterations = 14;
+	max_iterations = 2;
 	l = 1;
 	while(True):
 		# Debuggers:
@@ -114,7 +114,7 @@ def main():
 	#dict_x = ampl.getParameter('x_ljk').getValues().toDict()
 	#ampl.eval('display tau_bin;')
 	#print("dict_tau_bin: ")
-	#print(dict_x[(1,1,'MC1')])
+	ampl.eval('display tau_bin;')
 	x_rep = extract_solution(ampl.getParameter('x_ljk').getValues().toDict(),
 							 ampl.getVariable('tau_bin').getValues().toDict(),
 							 nbr_of_jobs,
@@ -147,8 +147,8 @@ def column_gen(ampl,mach_list):
 				'((A[j]*(u+p_j_o_postmach_disc[j])+B[j]' + 
 				'*max(u+p_j_o_postmach_disc[j]-d_disc[j],0))*x_sub[j,k,u]);')
 		# Eval x_ljk
-		ampl.eval('let {l in L_len..L_len, j in JOBS, k in mach_k} x_ljk[l,j,k] := sum{u in TIME}((u+1)*x_sub[j,k,u])-1;')
-		#ampl.eval('display x_sub;')
+		ampl.eval('let {l in L_len..L_len, j in JOBS, k in mach_k} x_ljk[l,j,k] := sum{u in TIME}( (u+1)*x_sub[j,k,u] )-1;')
+		ampl.eval('display x_sub;')
 
 	#print(red_cost)
 	return red_cost

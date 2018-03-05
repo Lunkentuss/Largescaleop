@@ -111,7 +111,7 @@ var gamma {K_mach_RESOURCES};
 
 #---------- Objective function -------------------------
 maximize obj_LP_D_RMP: 
-	sum{j in JOBS} pi[j] + sum{k in K_mach_RESOURCES} gamma[k];
+	sum{j in JOBS}( pi[j] ) + sum{k in K_mach_RESOURCES}( gamma[k] );
 	
 #---------- Constraints --------------------------------
 subject to constraint_d1 {l in L,k in K_mach_RESOURCES}:
@@ -148,9 +148,9 @@ var tau{K_mach_RESOURCES,L} >= 0;
 minimize obj_rmp: sum{l in L,k in K_mach_RESOURCES}(x_bar_sum_u_star[l,k] * tau[k,l]);
 
 #---------- Constraints --------------------------------
-subject to constraint_rmp1 {j in JOBS}: sum{k in K_mach_RESOURCES, l in L}(x_bar_sum_u[l,j,k] * tau[k,l]) == 1;
+subject to constraint_rmp1 {j in JOBS}: sum{k in K_mach_RESOURCES, l in L}(x_bar_sum_u[l,j,k] * tau[k,l]) = 1;
 
-subject to constraint_rmp2 {k in K_mach_RESOURCES}: sum{l in L}(tau[k,l]) == 1;
+subject to constraint_rmp2 {k in K_mach_RESOURCES}: sum{l in L}(tau[k,l]) = 1;
 
 #---------- Problem ------------------------------------
 problem rmp: obj_rmp, tau, constraint_rmp1, constraint_rmp2;
@@ -163,9 +163,9 @@ var tau_bin{K_mach_RESOURCES,1..L_len-1} binary >= 0;
 minimize obj_rmp_bin: sum{l in 1..L_len-1,k in K_mach_RESOURCES}(x_bar_sum_u_star[l,k] * tau_bin[k,l]);
 
 #---------- Constraints --------------------------------
-subject to constraint_rmp1_bin {j in JOBS}: sum{k in K_mach_RESOURCES, l in 1..L_len-1}(x_bar_sum_u[l,j,k] * tau_bin[k,l]) == 1;
+subject to constraint_rmp1_bin {j in JOBS}: sum{k in K_mach_RESOURCES, l in 1..L_len-1}(x_bar_sum_u[l,j,k] * tau_bin[k,l]) = 1;
 
-subject to constraint_rmp2_bin {k in K_mach_RESOURCES}: sum{l in 1..L_len-1}(tau_bin[k,l]) == 1;
+subject to constraint_rmp2_bin {k in K_mach_RESOURCES}: sum{l in 1..L_len-1}(tau_bin[k,l]) = 1;
 
 #---------- Problem ------------------------------------
 problem rmp_bin: obj_rmp_bin, tau_bin, constraint_rmp1_bin, constraint_rmp2_bin;
