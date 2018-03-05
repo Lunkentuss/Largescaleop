@@ -3,6 +3,7 @@ sys.path.append('../utils/')
 from amplpy import AMPL, DataFrame
 from getpara import *
 from heuristic import getDictHeuristic
+from time import time
 
 def main():
 
@@ -32,7 +33,7 @@ def main():
 
 	# Set A[j] and B[j]
 	A = [1 for x in range(nbr_of_jobs)]
-	B = [0 for x in range(nbr_of_jobs)]
+	B = [1 for x in range(nbr_of_jobs)]
 	setParamOfSingleSet(ampl,'JOBS','A',A)
 	setParamOfSingleSet(ampl,'JOBS','B',B)
 
@@ -69,6 +70,10 @@ def main():
 	# Loop for column generation
 	max_iterations = 100;
 	l = 1;
+	upper_bound = []
+	start = time()
+	time_v = []
+
 	while(True):
 		# Debuggers:
 		#print('L_len := ' + str(getSingleParameter(ampl,'L_len')))
@@ -80,7 +85,7 @@ def main():
 		# Solve RMP (pessimistic bound)------------------------------
 		# New problem decleration because strange problem
 
-		ampl.eval('solve rmp1;')
+		#ampl.eval('solve rmp1;')
 		#ampl.eval('display tau;')
 
 		print('== obj_rmp: ' + repr(ampl.getObjective('obj_rmp').value()))
@@ -90,8 +95,11 @@ def main():
 
 		# Optimistic bound??????
 
-		# Solve dual RMP --------------------------------------------
+		# Solve dual RMP (Pessimistic bound) ------------------------
 		ampl.eval('solve lp_dual1;')
+		upper_bound.append(ampl.getObjective('obj_LP_D_RMP').value())
+
+		time_v.append(time()-start)
 
 		# Increase l
 		l = l + 1
@@ -108,24 +116,28 @@ def main():
 	l = l - 1
 	print(l)
 	ampl.eval('solve rmp1_bin;')
+	upper_bound.append(ampl.getObjective('obj_rmp_bin').value())
+	time_v.append(time()-start)
+
 	# Extract x from x_ljk and tau_bin
 
 	#print(ampl.getParameter('x_ljk').getValues().toDict())
 	#print(ampl.getVariable('tau_bin').getValues().toDict())
 	#dict_x = ampl.getParameter('x_ljk').getValues().toDict()
-	#ampl.eval('display tau_bin;')
 	#print("dict_tau_bin: ")
-	ampl.eval('display tau_bin;')
+	#ampl.eval('display tau_bin;')
 	x_rep = extract_solution(ampl.getParameter('x_ljk').getValues().toDict(),
 							 ampl.getVariable('tau_bin').getValues().toDict(),
 							 nbr_of_jobs,
 							 mach_list,
 							 l)
-	print(x_rep)
-	print(sum([x[2]for x in x_rep]))
+	#print(x_rep)
+	#print(sum([x[2]for x in x_rep]))
 
 	#dict_tau = ampl.getVariable('tau_bin').getValues().toDict()
 	#print(dict_tau)
+	#print(upper_bound)
+	#print(time_v)
 
 
 
