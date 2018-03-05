@@ -36,7 +36,7 @@ def isAllPositive(array):
 	"""
 
 	for i in range(len(array)):
-		if(array[i] < 0):
+		if(array[i] < -.0001):
 			return False
 	return True 
 
