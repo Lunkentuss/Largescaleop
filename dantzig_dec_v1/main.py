@@ -32,7 +32,7 @@ def main():
 
 	# Set A[j] and B[j]
 	A = [1 for x in range(nbr_of_jobs)]
-	B = [0 for x in range(nbr_of_jobs)]
+	B = [1 for x in range(nbr_of_jobs)]
 	setParamOfSingleSet(ampl,'JOBS','A',A)
 	setParamOfSingleSet(ampl,'JOBS','B',B)
 
