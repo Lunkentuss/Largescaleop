@@ -54,6 +54,8 @@ def main():
 			  	'x_bar_sum_u_star[l,k]  := sum{u in TIME, j in JOBS}' + 
 				'((A[j]*(u+p_j_o_postmach_disc[j])+B[j]' + 
 				'*max(u+p_j_o_postmach_disc[j]-d_disc[j],0))*x_heur[j,k,u]);')
+	# Eval x_ljk
+	ampl.eval('let {l in L_len..L_len, j in JOBS, k in K_mach_RESOURCES} x_ljk[l,j,k] := sum{u in TIME}((u+1)*x_heur[j,k,u])-1;')
 
 	#print(ampl.getParameter('x_heur').getValues().toDict())
 
@@ -65,7 +67,7 @@ def main():
 
 
 	# Loop for column generation
-	max_iterations = 100;
+	max_iterations = 14;
 	l = 1;
 	while(True):
 		# Debuggers:
@@ -103,8 +105,27 @@ def main():
 
 
 	# Solve RMP with binary constraint
+	l = l - 1
 	print(l)
 	ampl.eval('solve rmp1_bin;')
+	# Extract x from x_ljk and tau_bin
+	#print(ampl.getParameter('x_ljk').getValues().toDict())
+	#print(ampl.getVariable('tau_bin').getValues().toDict())
+	#dict_x = ampl.getParameter('x_ljk').getValues().toDict()
+	#ampl.eval('display tau_bin;')
+	#print("dict_tau_bin: ")
+	#print(dict_x[(1,1,'MC1')])
+	x_rep = extract_solution(ampl.getParameter('x_ljk').getValues().toDict(),
+							 ampl.getVariable('tau_bin').getValues().toDict(),
+							 nbr_of_jobs,
+							 mach_list,
+							 l)
+	print(x_rep)
+	print(sum([x[2]for x in x_rep]))
+
+	dict_tau = ampl.getVariable('tau_bin').getValues().toDict()
+	print(dict_tau)
+
 
 
 def column_gen(ampl,mach_list):
@@ -125,6 +146,9 @@ def column_gen(ampl,mach_list):
 			  	'x_bar_sum_u_star[l,k]  := sum{u in TIME, j in JOBS}' + 
 				'((A[j]*(u+p_j_o_postmach_disc[j])+B[j]' + 
 				'*max(u+p_j_o_postmach_disc[j]-d_disc[j],0))*x_sub[j,k,u]);')
+		# Eval x_ljk
+		ampl.eval('let {l in L_len..L_len, j in JOBS, k in mach_k} x_ljk[l,j,k] := sum{u in TIME}((u+1)*x_sub[j,k,u])-1;')
+		#ampl.eval('display x_sub;')
 
 	#print(red_cost)
 	return red_cost
@@ -138,6 +162,20 @@ def isAllPositive(array):
 		if(array[i] < 0):
 			return False
 	return True 
+
+def extract_solution(x_ljk_dict,tau_bin_lk_dict,nbr_of_jobs,mach_list,l_size):
+	list_sol = []
+	for l in range(1,l_size+1):
+		for mach in mach_list:
+			for j in range(1,nbr_of_jobs+1):
+				value = x_ljk_dict[(l,j,mach)]
+				value = value[0]
+				#print(value)
+				if(tau_bin_lk_dict[(mach,l)][0] == 1 and value != -1):
+					print(value)
+					list_sol.append((j,mach,value))
+
+	return list_sol
 
 if __name__ == '__main__':
 	main()
