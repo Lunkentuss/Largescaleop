@@ -67,7 +67,7 @@ def main():
 
 
 	# Loop for column generation
-	max_iterations = 2;
+	max_iterations = 100;
 	l = 1;
 	while(True):
 		# Debuggers:
@@ -109,6 +109,7 @@ def main():
 	print(l)
 	ampl.eval('solve rmp1_bin;')
 	# Extract x from x_ljk and tau_bin
+
 	#print(ampl.getParameter('x_ljk').getValues().toDict())
 	#print(ampl.getVariable('tau_bin').getValues().toDict())
 	#dict_x = ampl.getParameter('x_ljk').getValues().toDict()
@@ -123,8 +124,8 @@ def main():
 	print(x_rep)
 	print(sum([x[2]for x in x_rep]))
 
-	dict_tau = ampl.getVariable('tau_bin').getValues().toDict()
-	print(dict_tau)
+	#dict_tau = ampl.getVariable('tau_bin').getValues().toDict()
+	#print(dict_tau)
 
 
 
@@ -148,7 +149,7 @@ def column_gen(ampl,mach_list):
 				'*max(u+p_j_o_postmach_disc[j]-d_disc[j],0))*x_sub[j,k,u]);')
 		# Eval x_ljk
 		ampl.eval('let {l in L_len..L_len, j in JOBS, k in mach_k} x_ljk[l,j,k] := sum{u in TIME}( (u+1)*x_sub[j,k,u] )-1;')
-		ampl.eval('display x_sub;')
+		#ampl.eval('display x_sub;')
 
 	#print(red_cost)
 	return red_cost
