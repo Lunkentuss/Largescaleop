@@ -41,23 +41,28 @@ def getDictHeuristic(ampl):
 	mach_avail_time = a_disc_list
 	JOBS_left = list(range(maxjobs))
 	x = {(x+1,y,z):0 for x in JOBS_left for y in mach_list for z in TIME}
-
+	
 	# Order after job time in descending order
 	#JOBS_left = index_sorted(proc_time_disc_list,reverse=True)
 	while (len(JOBS_left) > 0):
-		#print(len(JOBS_left))
 		mach_avail_time_ind_ord = index_sorted(mach_avail_time)
 
 		break_loop = False
 		for mach in mach_avail_time_ind_ord:
 			for job in JOBS_left:
 				# Test if job is feasible in machine
-				if(r_disc_list[job] <= mach_avail_time[mach] and lambda_mach[job][mach] == 1):
+				if(lambda_mach[job][mach] == 1):
 					#print(x[(job+1,mach_list[mach],mach_avail_time[mach])])
-					x[(job+1,mach_list[mach],mach_avail_time[mach])] = 1
+					#x[(job+1,mach_list[mach],mach_avail_time[mach])] = 1
 					#print(x[(job+1,mach_list[mach],mach_avail_time[mach])])
-					mach_avail_time[mach] += proc_time_disc_list[job] 
+					if(r_disc_list[job] <= mach_avail_time[mach]):
+						x[(job+1,mach_list[mach],mach_avail_time[mach])] = 1
+						mach_avail_time[mach] += proc_time_disc_list[job]
+					else:
+						x[(job+1,mach_list[mach],mach_avail_time[mach]+r_disc_list[job])] = 1
+						mach_avail_time[mach] += proc_time_disc_list[job] + r_disc_list[job]
 					JOBS_left.pop(JOBS_left.index(job))
+					#print(JOBS_left)
 
 					break_loop = True
 				
