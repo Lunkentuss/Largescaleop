@@ -157,7 +157,7 @@ problem rmp: obj_rmp, tau, constraint_rmp1, constraint_rmp2;
 
 # ======================= RMP-binary ===================
 # ======================================================
-var tau_bin{K_mach_RESOURCES,1..L_len-1} binary >= 0;
+var tau_bin{K_mach_RESOURCES,1..L_len-1} binary;
 
 #---------- Objective function -------------------------
 minimize obj_rmp_bin: sum{l in 1..L_len-1,k in K_mach_RESOURCES}(x_bar_sum_u_star[l,k] * tau_bin[k,l]);

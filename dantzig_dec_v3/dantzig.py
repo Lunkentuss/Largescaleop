@@ -54,12 +54,12 @@ def extract_solution(x_ljk_dict,tau_bin_lk_dict,nbr_of_jobs,mach_list,l_size):
 
 	return list_sol
 
-def dantzig(data_path='dat.dat',max_iterations = 1000):
+def dantzig(ampl,data_path='dat.dat',max_iterations = 1000):
 
-	ampl = AMPL()
+	#ampl = AMPL()
 
-	ampl.read('mod.mod')
-	ampl.readData(data_path)
+	#ampl.read('mod.mod')
+	#ampl.readData(data_path)
 	ampl.setOption('solver','cplex')
 
 	# Declare problems
@@ -82,6 +82,9 @@ def dantzig(data_path='dat.dat',max_iterations = 1000):
 
 	# Set A[j] and B[j]
 	A = [1 for x in range(nbr_of_jobs)]
+	A[10] = 100
+	A[11] = 50
+	A[12] = 200
 	B = [1 for x in range(nbr_of_jobs)]
 	setParamOfSingleSet(ampl,'JOBS','A',A)
 	setParamOfSingleSet(ampl,'JOBS','B',B)
@@ -162,9 +165,11 @@ def dantzig(data_path='dat.dat',max_iterations = 1000):
 
 	# Solve RMP with binary constraint
 	l = l - 1
-	print(l)
+	print("L : " + str(l))
 	ampl.eval('solve rmp1_bin;')
-	upper_bound.append(ampl.getObjective('obj_rmp_bin').value())
+	optimal = ampl.getObjective('obj_rmp_bin').value()
+	upper_bound.append(optimal)
+	print("Optimal: " + str(optimal))
 	time_iter.append(time()-start)
 
 	# Extract x from x_ljk and tau_bin
@@ -173,7 +178,7 @@ def dantzig(data_path='dat.dat',max_iterations = 1000):
 	#print(ampl.getVariable('tau_bin').getValues().toDict())
 	#dict_x = ampl.getParameter('x_ljk').getValues().toDict()
 	#print("dict_tau_bin: ")
-	#ampl.eval('display tau_bin;')
+	ampl.eval('display tau_bin;')
 	x_rep = extract_solution(ampl.getParameter('x_ljk').getValues().toDict(),
 							 ampl.getVariable('tau_bin').getValues().toDict(),
 							 nbr_of_jobs,
