@@ -3,7 +3,6 @@ sys.path.append('../utils/')
 from amplpy import AMPL, DataFrame
 from getpara import *
 from heuristic import getDictHeuristic
-import matplotlib.pyplot as plt
 
 def main():
 
@@ -32,8 +31,8 @@ def main():
 	#print('Number of jobs: ' + repr(nbr_of_jobs))
 
 	# Set A[j] and B[j]
-	A = [0 for x in range(nbr_of_jobs)]
-	B = [1 for x in range(nbr_of_jobs)]
+	A = [1 for x in range(nbr_of_jobs)]
+	B = [0 for x in range(nbr_of_jobs)]
 	setParamOfSingleSet(ampl,'JOBS','A',A)
 	setParamOfSingleSet(ampl,'JOBS','B',B)
 
@@ -81,7 +80,7 @@ def main():
 		# Solve RMP (pessimistic bound)------------------------------
 		# New problem decleration because strange problem
 
-		#ampl.eval('solve rmp1;')
+		ampl.eval('solve rmp1;')
 		#ampl.eval('display tau;')
 
 		print('== obj_rmp: ' + repr(ampl.getObjective('obj_rmp').value()))

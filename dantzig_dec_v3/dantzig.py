@@ -54,7 +54,7 @@ def extract_solution(x_ljk_dict,tau_bin_lk_dict,nbr_of_jobs,mach_list,l_size):
 
 	return list_sol
 
-def dantzig(ampl,data_path='dat.dat',max_iterations = 1000):
+def dantzig(ampl,A,B,data_path,max_iterations):
 
 	#ampl = AMPL()
 
@@ -81,11 +81,6 @@ def dantzig(ampl,data_path='dat.dat',max_iterations = 1000):
 	#print('Number of jobs: ' + repr(nbr_of_jobs))
 
 	# Set A[j] and B[j]
-	A = [1 for x in range(nbr_of_jobs)]
-	A[10] = 100
-	A[11] = 50
-	A[12] = 200
-	B = [1 for x in range(nbr_of_jobs)]
 	setParamOfSingleSet(ampl,'JOBS','A',A)
 	setParamOfSingleSet(ampl,'JOBS','B',B)
 

@@ -11,8 +11,14 @@ def main():
 	ampl.read(model_path)
 	ampl.readData(data_path)
 
+	nbr_of_jobs = int(ampl.getParameter('maxjobs').getValues().toList()[0][0])
+	A = [1 for i in range(nbr_of_jobs)]
+	B = [1 for i in range(nbr_of_jobs)]
+
+	max_iterations = 1000
+
 	# tuple(0) := solutions, tuple(1) := ) 
-	tuple_dantzig = dantzig(ampl,data_path)
+	tuple_dantzig = dantzig(ampl,A,B,data_path,max_iterations)
 	# TIME:x Upperbound:y
 	plt.plot(tuple_dantzig[2],tuple_dantzig[1])
 
