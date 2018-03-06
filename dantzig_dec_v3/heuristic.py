@@ -59,8 +59,8 @@ def getDictHeuristic(ampl):
 						x[(job+1,mach_list[mach],mach_avail_time[mach])] = 1
 						mach_avail_time[mach] += proc_time_disc_list[job]
 					else:
-						x[(job+1,mach_list[mach],mach_avail_time[mach]+r_disc_list[job])] = 1
-						mach_avail_time[mach] += proc_time_disc_list[job] + r_disc_list[job]
+						x[(job+1,mach_list[mach],r_disc_list[job])] = 1
+						mach_avail_time[mach] = proc_time_disc_list[job] + r_disc_list[job]
 					JOBS_left.pop(JOBS_left.index(job))
 					#print(JOBS_left)
 
