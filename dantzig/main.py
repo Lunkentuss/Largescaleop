@@ -4,8 +4,8 @@ from amplpy import AMPL
 
 def main():
 	model_path = 'mod.mod'
-	data_path = 'dat.dat'
-	#data_path = '../data/dat11.dat'
+	#data_path = 'dat.dat'
+	data_path = '../data/dat3.dat'
 
 	ampl = AMPL()
 	ampl.read(model_path)
