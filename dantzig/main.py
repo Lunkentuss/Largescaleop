@@ -4,11 +4,12 @@ from amplpy import AMPL
 
 def main():
 	model_path = 'mod.mod'
-	data_path = '../data/dat3.dat'
+	data_path = '../data/dat1.dat'
 
 	ampl = AMPL()
 	ampl.read(model_path)
 	ampl.readData(data_path)
+	ampl.setOption('solver_msg',0)
 
 	nbr_of_jobs = int(ampl.getParameter('maxjobs').getValues().toList()[0][0])
 	A = [1 for i in range(nbr_of_jobs)]

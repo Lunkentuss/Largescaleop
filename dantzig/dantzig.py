@@ -99,8 +99,7 @@ def dantzig(ampl,A,B,data_path,max_iterations):
 	time_iter = []
 
 	while(True):
-		# Debuggers:
-		#print('L_len := ' + str(getSingleParameter(ampl,'L_len')))
+		print("Iteration: " + str(l))
 
 		if(l > max_iterations): 
 			break;
