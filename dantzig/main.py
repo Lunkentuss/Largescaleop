@@ -4,7 +4,6 @@ from amplpy import AMPL
 
 def main():
 	model_path = 'mod.mod'
-	#data_path = 'dat.dat'
 	data_path = '../data/dat3.dat'
 
 	ampl = AMPL()
@@ -17,7 +16,7 @@ def main():
 
 	max_iterations = 1000
 
-	# tuple(0) := solutions, tuple(1) := ) 
+        # tuple(0) := solutions, tuple(1) := upperbound, tuple2() := time_iteration) 
 	tuple_dantzig = dantzig(ampl,A,B,data_path,max_iterations)
 	# TIME:x Upperbound:y
 	plt.plot(tuple_dantzig[2],tuple_dantzig[1])

@@ -11,7 +11,6 @@ def column_gen(ampl,mach_list):
 	for i in range(len(mach_list)):
 		ampl.eval('reset data mach_k;')
 		ampl.eval('data ; set mach_k := ' + mach_list[i] + ';')
-		#print(set2list(ampl,'mach_k'))
 		ampl.eval('solve column_generation1;')
 		red_cost[i] = ampl.getObjective('obj_sub').value()
 
@@ -25,7 +24,6 @@ def column_gen(ampl,mach_list):
 				'*max(u+p_j_o_postmach_disc[j]-d_disc[j],0))*x_sub[j,k,u]);')
 		# Eval x_ljk
 		ampl.eval('let {l in L_len..L_len, j in JOBS, k in mach_k} x_ljk[l,j,k] := sum{u in TIME}( (u+1)*x_sub[j,k,u] )-1;')
-		#ampl.eval('display x_sub;')
 
 	#print(red_cost)
 	return red_cost
@@ -47,19 +45,13 @@ def extract_solution(x_ljk_dict,tau_bin_lk_dict,nbr_of_jobs,mach_list,l_size):
 			for j in range(1,nbr_of_jobs+1):
 				value = x_ljk_dict[(l,j,mach)]
 				value = value[0]
-				#print(value)
 				if(tau_bin_lk_dict[(mach,l)][0] == 1 and value != -1):
-					#print(value)
 					list_sol.append((j,mach,value))
 
 	return list_sol
 
 def dantzig(ampl,A,B,data_path,max_iterations):
 
-	#ampl = AMPL()
-
-	#ampl.read('mod.mod')
-	#ampl.readData(data_path)
 	ampl.setOption('solver','cplex')
 
 	# Declare problems
@@ -72,20 +64,14 @@ def dantzig(ampl,A,B,data_path,max_iterations):
 	# Get nbr of machines and the set 
 	mach_list = set2list(ampl,'K_mach_RESOURCES')
 	nbr_of_machines = len(mach_list)
-	#print('Number of machines: ' + repr(nbr_of_machines))
-	#print('Machines: ' + repr(mach_list))
 
 	## Get the nbr of max jobs
 	nbr_of_jobs = getSingleParameter(ampl,'maxjobs')
 	nbr_of_jobs = int(nbr_of_jobs)
-	#print('Number of jobs: ' + repr(nbr_of_jobs))
 
 	# Set A[j] and B[j]
 	setParamOfSingleSet(ampl,'JOBS','A',A)
 	setParamOfSingleSet(ampl,'JOBS','B',B)
-
-	#print("A-dict: " + str(ampl.getParameter('A').getValues().toDict()))
-	#print("B-dict: " + str(ampl.getParameter('B').getValues().toDict()))
 
 	# Find feasible solution from heuristic and set x[1,k,j]
 	# in ampl
@@ -94,6 +80,7 @@ def dantzig(ampl,A,B,data_path,max_iterations):
 	heur_df = DataFrame(('JOBS','K_mach_RESOURCES','TIME'),('x_heur'))
 	heur_df.setValues(heur_dict)
 	ampl.setData(heur_df)
+
 	# Eval x_bar_sum_u
 	ampl.eval('let {l in L_len..L_len, j in JOBS, k in K_mach_RESOURCES}' +
 			  	'x_bar_sum_u[l,j,k]  := sum{u in TIME}(x_heur[j,k,u]);')
@@ -105,15 +92,6 @@ def dantzig(ampl,A,B,data_path,max_iterations):
 	# Eval x_ljk
 	ampl.eval('let {l in L_len..L_len, j in JOBS, k in K_mach_RESOURCES} x_ljk[l,j,k] := sum{u in TIME}((u+1)*x_heur[j,k,u])-1;')
 
-	#print(ampl.getParameter('x_heur').getValues().toDict())
-
-	#print(heur_dict)
-	#print('L_len := ' + str(getSingleParameter(ampl,'L_len')))
-
-
-	# Calculate RMP for the feasible solution(objective value)
-
-
 	# Loop for column generation
 	l = 1;
 	upper_bound = []
@@ -124,22 +102,8 @@ def dantzig(ampl,A,B,data_path,max_iterations):
 		# Debuggers:
 		#print('L_len := ' + str(getSingleParameter(ampl,'L_len')))
 
-		# Termination criteria == 1 (close enough criteria)
 		if(l > max_iterations): 
 			break;
-
-		# Solve RMP (pessimistic bound)------------------------------
-		# New problem decleration because strange problem
-
-		#ampl.eval('solve rmp1;')
-		#ampl.eval('display tau;')
-
-		print('== obj_rmp: ' + repr(ampl.getObjective('obj_rmp').value()))
-
-		#ampl.eval('display pi;')
-		#ampl.eval('display gamma;')
-
-		# Optimistic bound??????
 
 		# Solve dual RMP (Pessimistic bound) ------------------------
 		ampl.eval('solve lp_dual1;')
@@ -164,26 +128,14 @@ def dantzig(ampl,A,B,data_path,max_iterations):
 	ampl.eval('solve rmp1_bin;')
 	optimal = ampl.getObjective('obj_rmp_bin').value()
 	upper_bound.append(optimal)
-	print("Optimal: " + str(optimal))
 	time_iter.append(time()-start)
 
 	# Extract x from x_ljk and tau_bin
 
-	#print(ampl.getParameter('x_ljk').getValues().toDict())
-	#print(ampl.getVariable('tau_bin').getValues().toDict())
-	#dict_x = ampl.getParameter('x_ljk').getValues().toDict()
-	#print("dict_tau_bin: ")
 	ampl.eval('display tau_bin;')
 	x_rep = extract_solution(ampl.getParameter('x_ljk').getValues().toDict(),
 							 ampl.getVariable('tau_bin').getValues().toDict(),
 							 nbr_of_jobs,
 							 mach_list,
 							 l)
-	#print(x_rep)
-	#print(sum([x[2]for x in x_rep]))
-
-	#dict_tau = ampl.getVariable('tau_bin').getValues().toDict()
-	#print(dict_tau)
-	#print(upper_bound)
-	#print(time_iter)
 	return (x_rep,upper_bound,time_iter)
